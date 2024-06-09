@@ -36,12 +36,63 @@ int score = 0;
 
 
 
+
+
+void update_head(){
+
+}
+
+
+
+void update_body(){
+
+}
+
+
+
+void snake_update(){
+
+}
+
+
+
+void grow_body(){
+
+}
+
+
+
+bool snake_cell(int s, int y){
+
+}
+
+
+void place_food(){
+
+}
+
+
+
+
+
+void render(SDL_Renderer * sdl_renderer, const int screen_width, const int screen_height, const int grid_width, const int grid_height){
+    SDL_Rect block;
+
+    
+}
+
+
+
+
+
+
+
 int main(int argc, char* argv[]){
 
 const int frame_per_second = 60;
 const int ms_per_frame = 1000/ frame_per_second;
-const int scree_width = 640;
-const int scree_height = 640;
+const int screen_width = 640;
+const int screen_height = 640;
 const int grid_width =32;
 const int grid_height =32;
 
@@ -60,8 +111,33 @@ snake.growing = false;
 
 
 
+if(SDL_Init(SDL_INIT_VIDEO) < 0){
+    printf("error : sdl failed to initialize\n sdl error:'%s'",SDL_GetError());
+    return 1;
+}
 
 
+SDL_Window *sdl_window = SDL_CreateWindow("snake game",
+                                            SDL_WINDOWPOS_CENTERED,
+                                            SDL_WINDOWPOS_CENTERED,
+                                            screen_width,
+                                            screen_height,
+                                            SDL_WINDOW_SHOWN);
+
+
+
+
+if(sdl_window == NULL){
+    printf("error: window could not create\n sdl_error:'%s'", SDL_GetError());
+    return 1;
+}
+
+
+SDL_Renderer *sdl_renderer = SDL_CreateRenderer(sdl_window, -1, SDL_RENDERER_ACCELERATED);
+if(sdl_renderer == NULL){
+    printf("error: renderer could not create\n  sdl_error: '%s'", SDL_GetError());
+    return 1;
+}
 
 
 
