@@ -39,6 +39,27 @@ int score = 0;
 
 
 void update_head(){
+    switch(snake.direction){
+        case k_up:
+            snake.head_y -= snake.speed;
+            break;
+        
+        case k_down:
+            snake.head_y += snake.speed;
+            break;
+        
+        case k_left:
+            snake.head_x -= snake.speed;
+            break;
+        
+        case k_right:
+            snake.head_x += snake.speed;
+            break;
+
+    }
+    
+    snake.head_x = fmod(snake.head_x + snake.grid_width, snake.grid_width );
+    snake.head_y = fmod(snake.head_y + snake.grid_height , snake.grid_height);
 
 }
 
@@ -57,6 +78,7 @@ void snake_update(){
 
 
 void grow_body(){
+    snake.growing = true;
 
 }
 
@@ -69,6 +91,18 @@ bool snake_cell(int s, int y){
 
 void place_food(){
 
+    int x, y;
+    while(true){
+        x = rand() % snake.grid_width;
+        y = rand() % snake.grid_height;
+
+        if(!snake_cell(x,y)){
+            food.x = x;
+            food.y = y;
+            return ;
+        }
+    }
+
 }
 
 
@@ -78,7 +112,18 @@ void place_food(){
 void render(SDL_Renderer * sdl_renderer, const int screen_width, const int screen_height, const int grid_width, const int grid_height){
     SDL_Rect block;
 
-    
+    block.w = screen_width / grid_width;
+    block.h = screen_height / grid_height;
+    block.x = food.x * block.w;
+    block.y = food.y * block.h;
+
+    SDL_SetRenderDrawColor(sdl_renderer, 16,21,30,255);
+    SDL_RenderClear(sdl_renderer);
+
+
+
+
+
 }
 
 
