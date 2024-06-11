@@ -65,7 +65,28 @@ void update_head(){
 
 
 
-void update_body(){
+void update_body(SDL_Point current_head_cell, SDL_Point prev_head_cell){
+    snake.body[snake.body_length] = prev_head_cell;
+    snake.body_length ++;
+
+    if(!snake.growing){
+        for(int i=1; i< snake.body_length; i++){
+            snake.body[i-1] = snake.body[i];
+        }
+        snake.body_length --;
+    }
+    else{
+        snake.growing = false;
+        snake.size ++;
+        snake.speed -= 0.01f;
+    }
+
+    for(int i =0; i< snake.body_length; i++){
+        if(current_head_cell.x == snake.body[i].x && current_head_cell.y == snake.body[i].y){
+            snake.alive= false;
+        }
+    }
+
 
 }
 
