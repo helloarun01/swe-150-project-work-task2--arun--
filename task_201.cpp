@@ -93,6 +93,13 @@ void update_body(SDL_Point current_head_cell, SDL_Point prev_head_cell){
 
 
 void snake_update(){
+    SDL_Point prev_cell = {(int) snake.head_x, (int) snake.head_y};
+    update_head();
+    
+    SDL_Point curr_cell = {(int)snake.head_x, (int)snake.head_y};
+    if(curr_cell.x != prev_cell.x || curr_cell.y != prev_cell.y){
+        update_body(curr_cell, prev_cell);
+    }
 
 }
 
@@ -105,7 +112,19 @@ void grow_body(){
 
 
 
-bool snake_cell(int s, int y){
+bool snake_cell(int x, int y){
+    if ( x== (int) snake.head_x && y== (int)snake.head_y){
+        return true;
+
+    }
+
+    for(int i=0; i< snake.body_length; i++){
+        if (x== snake.body[i].x && y == snake.body[i].y){
+            return true;
+        }
+    }
+
+    return false;
 
 }
 
