@@ -148,6 +148,65 @@ void place_food(){
 
 
 
+void game_update(){
+    if(!snake.alive) return;
+
+    snake_update();
+
+    int new_x = (int)snake.head_x;
+    int new_y = (int)snake.head_y;
+
+    if(food.x == new_x && food.y == new_y){
+        score ++;
+        place_food();
+        grow_body();
+        snake.speed += 0.02f;
+    }
+}
+
+
+
+
+void handel_input(bool * running){
+    SDL_Event e;
+    while(SDL_PollEvent(&e)){
+        if(e.type == SDL_QUIT){
+            *running = false;
+        }
+        else if (e.type == SDL_KEYDOWN){
+            switch(e.key.keysym.sym){
+                case SDLK_UP:
+                    if(snake.direction != k_down || snake.size == 1){
+                        snake.direction = k_up;
+                    }
+                    break;
+                
+                case SDLK_DOWN:
+                    if (snake.direction != k_up || snake.size == 1){
+                        snake.direction = k_down;
+                    }
+                    break;
+
+                case SDLK_LEFT:
+                    if(snake.direction != k_right || snake.size == 1){
+                        snake.direction = k_left;
+                    }
+                    break;
+
+                case SDLK_RIGHT:
+                    if (snake.direction != k_left || snake.size == 1){
+                        snake.direction = k_right;
+                    }
+                    break;
+
+            }
+        }
+    }
+    
+}
+
+
+
 
 void render(SDL_Renderer * sdl_renderer, const int screen_width, const int screen_height, const int grid_width, const int grid_height){
     SDL_Rect block;
@@ -168,6 +227,19 @@ void render(SDL_Renderer * sdl_renderer, const int screen_width, const int scree
 
 
 
+void update_window_title(SDL_Window * sdl_window, int score, int fps){
+    char title[64];
+    snprintf(title, sizeof(title), "snake score: %d  fps: %d",score,fps);
+    SDL_SetWindowTitle(sdl_window, title);
+
+
+}
+
+
+void run_game(){
+
+
+}
 
 
 
