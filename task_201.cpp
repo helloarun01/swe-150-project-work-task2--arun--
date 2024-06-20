@@ -218,6 +218,22 @@ void render(SDL_Renderer * sdl_renderer, const int screen_width, const int scree
 
     SDL_SetRenderDrawColor(sdl_renderer, 16,21,30,255);
     SDL_RenderClear(sdl_renderer);
+    SDL_SetRenderDrawColor(sdl_renderer, 255, 204, 0, 255);
+
+    SDL_RenderFillRect(sdl_renderer, &block);
+
+    if(snake.alive){
+        SDL_SetRenderDrawColor(sdl_renderer, 0, 122, 204, 255);
+
+    }
+    else{
+        SDL_SetRenderDrawColor(sdl_renderer, 16, 21, 30, 255);
+    }
+
+    for (int i=0; i< snake.body_length; i++){
+        block.x= snake.body[i].x * block.w;
+        block.
+    }
 
 
 
@@ -236,7 +252,38 @@ void update_window_title(SDL_Window * sdl_window, int score, int fps){
 }
 
 
-void run_game(){
+void run_game(SDL_Window *sdl_window, SDL_Renderer *sdl_renderer, const int target_frame_duration, const int screen_width, const int screen_height, const int grid_width, const int grid_height){
+    Uint32 title_timestamp = SDL_GetTicks();
+    Uint32 frame_start;
+    Uint32 frame_end;
+    Uint32 frame_duration;
+    Uint32 frame_count =0;
+    bool running = true;
+
+    while(running){
+
+        frame_start = SDL_GetTicks();
+        handel_input(&running);
+        game_update();
+        render(sdl_renderer, screen_width, screen_height, grid_width, grid_height);
+        if(!snake.alive){
+            running = false;
+        }
+
+        frame_end = SDL_GetTicks();
+        frame_count ++;
+        frame_duration = frame_end - frame_start;
+        if(frame_end - title_timestamp >= 1000){
+            update_window_title(sdl_window, score, frame_count);
+            frame_count =0;
+            title_timestamp = frame_end;
+
+        }
+
+        if(frame_duration < target_frame_duration){
+            SDL_Delay(target_frame_duration - frame_duration);
+        }
+    }
 
 
 }
@@ -297,6 +344,18 @@ if(sdl_renderer == NULL){
 }
 
 
+
+
+place_food();
+run_game(sdl_window , sdl_renderer, ms_per_frame, screen_width, screen_height, grid_width, grid_height);
+
+
+printf("game has terminated successfully!\n");
+printf("score: %d\n",score);
+printf("size: %d\n",snake.size);
+
+SDL_DestroyWindow(sdl_window);
+SDL_Quit();
 
 
 
