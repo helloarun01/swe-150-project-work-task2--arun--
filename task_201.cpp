@@ -232,12 +232,15 @@ void render(SDL_Renderer * sdl_renderer, const int screen_width, const int scree
 
     for (int i=0; i< snake.body_length; i++){
         block.x= snake.body[i].x * block.w;
-        block.
+        block.y = (int)snake.head_y * block.h;
+        SDL_RenderFillRect(sdl_renderer, &block);
+        SDL_RenderPresent(sdl_renderer);
     }
 
-
-
-
+    block.x = (int)snake.head_x * block.w;
+    block.y = (int)snake.head_y * block.h;
+    SDL_RenderFillRect(sdl_renderer, &block);
+    SDL_RenderPresent(sdl_renderer);
 
 }
 
@@ -354,11 +357,14 @@ printf("game has terminated successfully!\n");
 printf("score: %d\n",score);
 printf("size: %d\n",snake.size);
 
+
+
+
+
+SDL_DestroyRenderer(sdl_renderer);
 SDL_DestroyWindow(sdl_window);
 SDL_Quit();
 
-
-
-
 return 0;
+
 }
