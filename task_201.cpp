@@ -66,13 +66,13 @@ void update_head(){
 
 
 void update_body(SDL_Point current_head_cell, SDL_Point prev_head_cell){
-    snake.body[snake.body_length] = prev_head_cell;
+    for (int i = snake.body_length; i > 0; i--){
+        snake.body[i] = snake.body[i - 1];
+    }
+    snake.body[0] = prev_head_cell;
     snake.body_length ++;
 
     if(!snake.growing){
-        for(int i=1; i< snake.body_length; i++){
-            snake.body[i-1] = snake.body[i];
-        }
         snake.body_length --;
     }
     else{
@@ -81,7 +81,7 @@ void update_body(SDL_Point current_head_cell, SDL_Point prev_head_cell){
         snake.speed -= 0.01f;
     }
 
-    for(int i =0; i< snake.body_length; i++){
+    for(int i =1; i< snake.body_length; i++){
         if(current_head_cell.x == snake.body[i].x && current_head_cell.y == snake.body[i].y){
             snake.alive= false;
         }
@@ -213,28 +213,20 @@ void render(SDL_Renderer * sdl_renderer, const int screen_width, const int scree
 
     block.w = screen_width / grid_width;
     block.h = screen_height / grid_height;
-    block.x = food.x * block.w;
-    block.y = food.y * block.h;
-
     SDL_SetRenderDrawColor(sdl_renderer, 16,21,30,255);
     SDL_RenderClear(sdl_renderer);
+    
     SDL_SetRenderDrawColor(sdl_renderer, 255, 204, 0, 255);
-
+    block.x = food.x * block.w;
+    block.y = food.y * block.h;
     SDL_RenderFillRect(sdl_renderer, &block);
+    SDL_SetRenderDrawColor(sdl_renderer, snake.alive ? 0 : 255, 122, 204, 255);
 
-    if(snake.alive){
-        SDL_SetRenderDrawColor(sdl_renderer, 0, 122, 204, 255);
-
-    }
-    else{
-        SDL_SetRenderDrawColor(sdl_renderer, 16, 21, 30, 255);
-    }
 
     for (int i=0; i< snake.body_length; i++){
         block.x= snake.body[i].x * block.w;
-        block.y = (int)snake.head_y * block.h;
+        block.y = snake.body[i].y * block.h;
         SDL_RenderFillRect(sdl_renderer, &block);
-        SDL_RenderPresent(sdl_renderer);
     }
 
     block.x = (int)snake.head_x * block.w;
