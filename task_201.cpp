@@ -133,10 +133,11 @@ void grow_body(int amount){
 
 bool is_obstacles(int x, int y){
     for(int i = 0; i < num_obstacles; i++){
-        if(x == obstacles[i].x && y == obstacles[i].y == y){
+        if(x == obstacles[i].x && y == obstacles[i].y ){
             return true;
         }
     }
+    return false;
 }
 
 
