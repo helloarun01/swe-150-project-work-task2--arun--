@@ -19,7 +19,7 @@ struct Snake{
     bool alive;
     float head_x;
     float head_y;
-    SDL_Point body[1024];     // I fixed the snake body
+    SDL_Point body[1024]; 
     int body_length;
     int growing;
     int grid_width;
@@ -31,8 +31,19 @@ struct Snake{
 
 struct Snake snake;
 SDL_Point food;
+SDL_Point bonus_food;
+bool bonus_food_active = false;
 int score = 0;
 
+SDL_Point obstacles[] = {
+   {13,5},{14, 5}, {15, 5}, {16, 5},{17,5},{18,5},
+    {15,7},{15,8},{15,9},{15,10},{15,11},
+
+     {13,17},{14, 17}, {15, 17}, {16, 17},{17,17},{18,17},
+    {15,19},{15,20},{15,21},{15,22},{15,23},{15,24},{15,25},{15,26}
+};
+
+int num_obstacles = sizeof(obstacles) / sizeof(obstacles[0]);
 
 
 
@@ -97,6 +108,14 @@ void snake_update(){
     update_head();
     
     SDL_Point curr_cell = {(int)snake.head_x, (int)snake.head_y};
+
+        for(int i = 0; i < num_obstacles; i++){
+        if(curr_cell.x == obstacles[i].x && curr_cell.y == obstacles[i].y){
+            snake.alive = false;
+            return;
+        }
+    }
+    
     if(curr_cell.x != prev_cell.x || curr_cell.y != prev_cell.y){
         update_body(curr_cell, prev_cell);
     }
@@ -105,9 +124,19 @@ void snake_update(){
 
 
 
-void grow_body(){
+void grow_body(int amount){
     snake.growing = true;
+    snake.body_length += amount - 1;
 
+}
+
+
+bool is_obstacles(int x, int y){
+    for(int i = 0; i < num_obstacles; i++){
+        if(x == obstacles[i].x && y == obstacles[i].y == y){
+            return true;
+        }
+    }
 }
 
 
@@ -136,7 +165,7 @@ void place_food(){
         x = rand() % snake.grid_width;
         y = rand() % snake.grid_height;
 
-        if(!snake_cell(x,y)){
+        if(!snake_cell(x,y) && !is_obstacles(x,y)){
             food.x = x;
             food.y = y;
             return ;
@@ -146,6 +175,19 @@ void place_food(){
 }
 
 
+void place_bonus_food(){
+    int x, y;
+    while(true){
+        x = rand() % snake.grid_width;
+        y = rand() % snake.grid_height;
+        
+        if(!snake_cell(x,y) && !is_obstacles(x,y)){
+            bonus_food.x = x;
+            bonus_food.y = y;
+            return;
+        }
+    }
+}
 
 
 void game_update(){
@@ -159,8 +201,20 @@ void game_update(){
     if(food.x == new_x && food.y == new_y){
         score ++;
         place_food();
-        grow_body();
+        grow_body(1);
         snake.speed += 0.02f;
+    }
+
+        if(bonus_food_active && bonus_food.x == new_x && bonus_food.y == new_y){
+        score += 5;
+        place_food();
+        grow_body(3);
+        bonus_food_active = false;
+    }
+
+
+    if(score % 10 == 0 && !bonus_food_active && score >0){
+        place_bonus_food();
     }
 }
 
@@ -215,6 +269,13 @@ void render(SDL_Renderer * sdl_renderer, const int screen_width, const int scree
     block.h = screen_height / grid_height;
     SDL_SetRenderDrawColor(sdl_renderer, 16,21,30,255);
     SDL_RenderClear(sdl_renderer);
+
+    SDL_SetRenderDrawColor(sdl_renderer, 255, 0, 0, 255);
+    for (int i = 0; i < num_obstacles; i++) {
+        block.x = obstacles[i].x * block.w;
+        block.y = obstacles[i].y * block.h;
+        SDL_RenderFillRect(sdl_renderer, &block);
+    }
     
     SDL_SetRenderDrawColor(sdl_renderer, 255, 204, 0, 255);
     block.x = food.x * block.w;
@@ -223,12 +284,21 @@ void render(SDL_Renderer * sdl_renderer, const int screen_width, const int scree
     SDL_SetRenderDrawColor(sdl_renderer, snake.alive ? 0 : 255, 122, 204, 255);
 
 
+    if (bonus_food_active) {
+        SDL_SetRenderDrawColor(sdl_renderer, 0, 255, 0, 255);
+        block.x = bonus_food.x * block.w;
+        block.y = bonus_food.y * block.h;
+        SDL_RenderFillRect(sdl_renderer, &block);
+    }
+
+    
     for (int i=0; i< snake.body_length; i++){
         block.x= snake.body[i].x * block.w;
         block.y = snake.body[i].y * block.h;
         SDL_RenderFillRect(sdl_renderer, &block);
     }
 
+    SDL_SetRenderDrawColor(sdl_renderer, 255, 255, 255, 255);
     block.x = (int)snake.head_x * block.w;
     block.y = (int)snake.head_y * block.h;
     SDL_RenderFillRect(sdl_renderer, &block);
@@ -347,8 +417,6 @@ run_game(sdl_window , sdl_renderer, ms_per_frame, screen_width, screen_height, g
 
 printf("game has terminated successfully!\n");
 printf("score: %d\n",score);
-printf("size: %d\n",snake.size);
-
 
 
 
